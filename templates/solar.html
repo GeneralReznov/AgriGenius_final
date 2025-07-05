@@ -1,0 +1,507 @@
+{% extends 'base.html' %}
+
+{% block title %}Solar Power Prediction - AgriGenius 360°{% endblock %}
+
+{% block content %}
+{% include 'weather_animations.html' %}
+<div class="page-header">
+    <h1><i class="fas fa-sun"></i> Solar Power Prediction</h1>
+    <p class="lead">Enter weather and environmental parameters to predict solar power generation</p>
+</div>
+
+<div class="row mt-4">
+    <div class="col-lg-7">
+        <div class="card form-card">
+            <div class="card-body">
+                <form id="solar-form">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="distance_to_solar_noon" name="distance_to_solar_noon" 
+                                       placeholder="Distance to Solar Noon" min="0" max="1" step="0.01" required>
+                                <label for="distance_to_solar_noon">Distance to Solar Noon</label>
+                                <div class="form-text">Distance to solar noon (0-1)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="temperature" name="temperature" 
+                                       placeholder="Temperature (°C)" min="-5" max="35" step="0.1" required>
+                                <label for="temperature">Temperature (°C)</label>
+                                <div class="form-text">Temperature in Celsius (-5 to 35)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="wind_direction" name="wind_direction" 
+                                       placeholder="Wind Direction (°)" min="0" max="360" step="0.1" required>
+                                <label for="wind_direction">Wind Direction (°)</label>
+                                <div class="form-text">Wind direction in degrees (0-360)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="wind_speed" name="wind_speed" 
+                                       placeholder="Wind Speed (m/s)" min="0" max="20" step="0.1" required>
+                                <label for="wind_speed">Wind Speed (m/s)</label>
+                                <div class="form-text">Wind speed in meters per second (0-20)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="sky_cover" name="sky_cover" 
+                                       placeholder="Sky Cover (%)" min="0" max="100" step="0.1" required>
+                                <label for="sky_cover">Sky Cover (%)</label>
+                                <div class="form-text">Sky cover percentage (0-100)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="visibility" name="visibility" 
+                                       placeholder="Visibility (km)" min="0" max="10" step="0.1" required>
+                                <label for="visibility">Visibility (km)</label>
+                                <div class="form-text">Visibility in kilometers (0-10)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="humidity" name="humidity" 
+                                       placeholder="Humidity (%)" min="0" max="100" step="0.1" required>
+                                <label for="humidity">Humidity (%)</label>
+                                <div class="form-text">Relative humidity percentage (0-100)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="average_wind_speed_period" name="average_wind_speed_period" 
+                                       placeholder="Average Wind Speed (m/s)" min="0" max="20" step="0.1" required>
+                                <label for="average_wind_speed_period">Average Wind Speed (m/s)</label>
+                                <div class="form-text">Average wind speed in period (0-20)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control" id="average_pressure_period" name="average_pressure_period" 
+                               placeholder="Average Pressure (hPa)" min="950" max="1050" step="0.1" required>
+                        <label for="average_pressure_period">Average Pressure (hPa)</label>
+                        <div class="form-text">Average pressure in period (950-1050 hPa)</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sun"></i> Predict Solar Power
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-5">
+        <div class="card result-card">
+            <div class="card-body">
+                <h4 class="card-title"><i class="fas fa-sun"></i> Solar Power Prediction</h4>
+                <div id="loading" class="text-center d-none">
+                    <div class="spinner-border text-warning" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Analyzing weather conditions...</p>
+                </div>
+                <div id="result-container" class="text-center d-none">
+                    <div class="result-icon mb-3">
+                        <i class="fas fa-bolt fa-3x text-warning"></i>
+                    </div>
+                    <h3 class="mb-3">Predicted Solar Power</h3>
+                    <div class="solar-power-prediction">
+                        <span id="power-result"></span> kW
+                    </div>
+                    <p class="mt-3 solar-description">This is the predicted solar power generation based on the provided weather conditions.</p>
+                    
+                    <!-- Solar Power Visualization -->
+                    <div class="solar-visualization mt-4">
+                        <div class="solar-sun"></div>
+                        <div class="solar-panel">
+                            <div class="solar-cell"></div>
+                            <div class="solar-cell"></div>
+                            <div class="solar-cell"></div>
+                            <div class="solar-cell"></div>
+                            <div class="solar-cell"></div>
+                            <div class="solar-cell"></div>
+                        </div>
+                        <div class="solar-stand"></div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <canvas id="solar-chart" width="300" height="200"></canvas>
+                    </div>
+                </div>
+                <div id="error-container" class="text-center d-none">
+                    <div class="result-icon mb-3">
+                        <i class="fas fa-exclamation-triangle fa-3x text-danger"></i>
+                    </div>
+                    <h3 class="mb-3">Error</h3>
+                    <p id="error-message" class="text-danger"></p>
+                </div>
+                <div id="initial-message" class="text-center">
+                    <i class="fas fa-sun fa-3x text-muted mb-3"></i>
+                    <p>Enter weather and environmental parameters to predict solar power generation.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card info-card mt-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-info-circle"></i> How It Works</h5>
+                <p>Our solar power prediction system uses machine learning to analyze weather factors like:</p>
+                <ul>
+                    <li>Sky cover and visibility</li>
+                    <li>Temperature and humidity</li>
+                    <li>Wind conditions</li>
+                    <li>Atmospheric pressure</li>
+                </ul>
+                <p>These parameters help predict solar power generation for efficient energy planning.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Chart.js -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const solarForm = document.getElementById('solar-form');
+    const loadingDiv = document.getElementById('loading');
+    const resultContainer = document.getElementById('result-container');
+    const errorContainer = document.getElementById('error-container');
+    const initialMessage = document.getElementById('initial-message');
+    const powerResult = document.getElementById('power-result');
+    const errorMessage = document.getElementById('error-message');
+    let solarChart = null;
+    
+    // Add animation to form fields
+    const formFields = document.querySelectorAll('.form-control, .form-select');
+    formFields.forEach((field, index) => {
+        field.style.opacity = '0';
+        field.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            field.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            field.style.opacity = '1';
+            field.style.transform = 'translateY(0)';
+        }, 100 + (index * 100));
+    });
+    
+    solarForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Hide result containers and show loading
+        resultContainer.classList.add('d-none');
+        errorContainer.classList.add('d-none');
+        initialMessage.classList.add('d-none');
+        loadingDiv.classList.remove('d-none');
+        
+        // Get form data with animated button effect
+        const submitButton = document.querySelector('.btn-primary');
+        submitButton.classList.add('pulse-effect');
+        
+        const formData = {
+            distance_to_solar_noon: document.getElementById('distance_to_solar_noon').value,
+            temperature: document.getElementById('temperature').value,
+            wind_direction: document.getElementById('wind_direction').value,
+            wind_speed: document.getElementById('wind_speed').value,
+            sky_cover: document.getElementById('sky_cover').value,
+            visibility: document.getElementById('visibility').value,
+            humidity: document.getElementById('humidity').value,
+            average_wind_speed_period: document.getElementById('average_wind_speed_period').value,
+            average_pressure_period: document.getElementById('average_pressure_period').value
+        };
+        
+        // Send API request
+        fetch('/predict_solar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Hide loading
+            loadingDiv.classList.add('d-none');
+            submitButton.classList.remove('pulse-effect');
+            
+            if (data.success) {
+                // Show result with staggered animations
+                resultContainer.classList.remove('d-none');
+                resultContainer.style.opacity = '0';
+                resultContainer.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    resultContainer.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    resultContainer.style.opacity = '1';
+                    resultContainer.style.transform = 'translateY(0)';
+                }, 100);
+                
+                // Display power prediction with animation
+                powerResult.textContent = data.power.toFixed(2);
+                powerResult.classList.add('result-animation');
+                setTimeout(() => {
+                    powerResult.classList.remove('result-animation');
+                }, 1000);
+                
+                // Animate solar panel visualization with delay
+                setTimeout(() => {
+                    animateSolarPower(data.power);
+                }, 500);
+                
+                // Create chart with delay for smoother experience
+                setTimeout(() => {
+                    createSolarChart(data.power);
+                }, 800);
+            } else {
+                // Show error
+                errorMessage.textContent = data.error || 'An error occurred during prediction.';
+                errorContainer.classList.remove('d-none');
+            }
+        })
+        .catch(error => {
+            // Hide loading and show error
+            loadingDiv.classList.add('d-none');
+            submitButton.classList.remove('pulse-effect');
+            errorMessage.textContent = error.message || 'An error occurred during prediction.';
+            errorContainer.classList.remove('d-none');
+        });
+    });
+    
+    /**
+     * Animate the solar power visualization based on the predicted power
+     * @param {number} power - The predicted solar power in kW
+     */
+    function animateSolarPower(power) {
+        // Get visualization elements
+        const solarPanel = document.querySelector('.solar-panel');
+        const solarCells = document.querySelectorAll('.solar-cell');
+        const solarSun = document.querySelector('.solar-sun');
+        const solarVisualization = document.querySelector('.solar-visualization');
+        
+        // Calculate efficiency level based on power (0-1 scale)
+        const maxPowerRef = 15; // Reference value for maximum expected power
+        const efficiency = Math.min(power / maxPowerRef, 1);
+        
+        // Create sun rays based on efficiency
+        createSunRays(efficiency);
+        
+        // Adjust sun size and brightness based on power
+        solarSun.style.transform = `scale(${0.8 + (efficiency * 0.4)})`;
+        solarSun.style.boxShadow = `0 0 ${20 + (efficiency * 20)}px #FDB813`;
+        
+        // Activate solar cells with sequence and timing based on efficiency
+        solarCells.forEach((cell, index) => {
+            // Remove any previous animation classes
+            cell.classList.remove('active');
+            
+            // Only activate cells if power is sufficient
+            if (power > 1) {
+                // Higher power means faster activation
+                const delay = 300 + (index * (500 / efficiency));
+                setTimeout(() => {
+                    cell.classList.add('active');
+                }, delay);
+            }
+        });
+        
+        // Adjust background color based on weather conditions (using sky cover from the form)
+        const skyCover = parseFloat(document.getElementById('sky_cover').value) || 0;
+        const skyColorEnd = skyCover > 50 ? '#6a8caf' : '#1E90FF';
+        solarVisualization.style.background = `linear-gradient(to bottom, #87CEEB, ${skyColorEnd})`;
+    }
+    
+    /**
+     * Create sun rays for the solar visualization
+     * @param {number} intensity - Ray intensity from 0-1
+     */
+    function createSunRays(intensity) {
+        // Clear previous rays
+        const existingRays = document.querySelectorAll('.solar-ray');
+        existingRays.forEach(ray => ray.remove());
+        
+        // Skip if intensity is too low
+        if (intensity < 0.2) return;
+        
+        const solarVisualization = document.querySelector('.solar-visualization');
+        const sun = document.querySelector('.solar-sun');
+        const sunRect = sun.getBoundingClientRect();
+        const containerRect = solarVisualization.getBoundingClientRect();
+        
+        // Get sun position relative to container
+        const sunX = sunRect.left - containerRect.left + (sunRect.width / 2);
+        const sunY = sunRect.top - containerRect.top + (sunRect.height / 2);
+        
+        // Create rays
+        const rayCount = Math.floor(5 + (intensity * 10));
+        
+        for (let i = 0; i < rayCount; i++) {
+            const ray = document.createElement('div');
+            ray.className = 'solar-ray';
+            
+            // Calculate random position for ray
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 30 + Math.random() * 80;
+            const rayX = sunX + Math.cos(angle) * distance;
+            const rayY = sunY + Math.sin(angle) * distance;
+            
+            // Set ray size and position
+            const size = 10 + Math.random() * 20;
+            ray.style.width = `${size}px`;
+            ray.style.height = `${size}px`;
+            ray.style.left = `${rayX}px`;
+            ray.style.top = `${rayY}px`;
+            
+            // Set ray animation delay
+            ray.style.animationDelay = `${Math.random() * 3}s`;
+            
+            // Add ray to container
+            solarVisualization.appendChild(ray);
+        }
+    }
+    
+    /**
+     * Create solar power output chart
+     * @param {number} predictedPower - The predicted solar power in kW
+     */
+    function createSolarChart(predictedPower) {
+        const ctx = document.getElementById('solar-chart').getContext('2d');
+        
+        // Destroy existing chart if it exists
+        if (solarChart) {
+            solarChart.destroy();
+        }
+        
+        // Set a basic solar output curve based on the predicted power
+        const maxPower = predictedPower;
+        const hours = Array.from({length: 12}, (_, i) => i + 6); // 6 AM to 6 PM
+        
+        // Create a bell curve-like data distribution
+        const generateCurve = (max) => {
+            return hours.map(hour => {
+                // Bell curve formula centered at noon (hour 12)
+                const distFromNoon = Math.abs(hour - 12);
+                return max * Math.exp(-(distFromNoon * distFromNoon) / 8);
+            });
+        };
+        
+        const powerData = generateCurve(maxPower);
+        
+        // Get sky cover to adjust chart appearance
+        const skyCover = parseFloat(document.getElementById('sky_cover').value) || 0;
+        const opacity = 1 - (skyCover / 200); // Adjust transparency based on cloud cover
+        
+        solarChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: hours.map(h => `${h}:00`),
+                datasets: [{
+                    label: 'Estimated Power Output (kW)',
+                    data: powerData,
+                    borderColor: '#F9A825',
+                    backgroundColor: `rgba(249, 168, 37, ${opacity})`,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.parsed.y.toFixed(2)} kW`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Power (kW)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time of Day'
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+<style>
+/* Additional animations for solar page */
+.pulse-effect {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 152, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 152, 0, 0);
+    }
+}
+
+.solar-description {
+    animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.solar-power-prediction {
+    background: linear-gradient(45deg, #ff9800 0%, #ffc107 100%);
+    color: #fff;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    transition: all 0.5s ease;
+}
+
+.solar-power-prediction:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+</style>
+{% endblock %}

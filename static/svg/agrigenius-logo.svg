@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <!-- Background gradient -->
+  <defs>
+    <radialGradient id="bgGradient" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:0.3" />
+      <stop offset="50%" style="stop-color:#4169E1;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#663399;stop-opacity:0.1" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="url(#bgGradient)" opacity="0.8"/>
+  
+  <!-- Main circle -->
+  <circle cx="200" cy="150" r="80" fill="none" stroke="#7FFF00" stroke-width="4"/>
+  
+  <!-- Inner decorative pattern -->
+  <g stroke="#7FFF00" stroke-width="2" fill="#7FFF00">
+    <!-- Central circle -->
+    <circle cx="200" cy="150" r="6"/>
+    
+    <!-- Six main branches -->
+    <g>
+      <!-- Top branch -->
+      <line x1="200" y1="150" x2="200" y2="90"/>
+      <circle cx="200" cy="90" r="3"/>
+      <path d="M 190,100 Q 200,85 210,100" fill="none" stroke="#7FFF00" stroke-width="2"/>
+      <path d="M 185,110 Q 200,95 215,110" fill="none" stroke="#7FFF00" stroke-width="2"/>
+      
+      <!-- Top-right branch -->
+      <line x1="200" y1="150" x2="243" y2="107"/>
+      <circle cx="243" cy="107" r="3"/>
+      <path d="M 235,115 Q 243,100 251,108" fill="none" stroke="#7FFF00" stroke-width="2"/>
+      <path d="M 230,122 Q 243,107 256,115" fill="none" stroke="#7FFF00" stroke-width="2"/>
+      
+      <!-- Bottom-right branch -->
+      <line x1="200" y1="150" x2="243" y2="193"/>
+      <circle cx="243" cy="193" r="3"/>
+      <path d="M 235,185 Q 243,200 251,192" fill="none" stroke="#7FFF00" stroke-width="2"/>
+      <path d="M 230,178 Q 243,193 256,185" fill="none" stroke="#7FFF00" stroke-width="2"/>
+      
+      <!-- Bottom branch -->
+      <line x1="200" y1="150" x2="200" y2="210"/>
+      <circle cx="200" cy="210" r="3"/>
+      <path d="M 190,200 Q 200,215 210,200" fill="none" stroke="#7FFF00" stroke-width="2"/>
+      <path d="M 185,190 Q 200,205 215,190" fill="none" stroke="#7FFF00" stroke-width="2"/>
+      
+      <!-- Bottom-left branch -->
+      <line x1="200" y1="150" x2="157" y2="193"/>
+      <circle cx="157" cy="193" r="3"/>
+      <path d="M 165,185 Q 157,200 149,192" fill="none" stroke="#7FFF00" stroke-width="2"/>
+      <path d="M 170,178 Q 157,193 144,185" fill="none" stroke="#7FFF00" stroke-width="2"/>
+      
+      <!-- Top-left branch -->
+      <line x1="200" y1="150" x2="157" y2="107"/>
+      <circle cx="157" cy="107" r="3"/>
+      <path d="M 165,115 Q 157,100 149,108" fill="none" stroke="#7FFF00" stroke-width="2"/>
+      <path d="M 170,122 Q 157,107 144,115" fill="none" stroke="#7FFF00" stroke-width="2"/>
+    </g>
+    
+    <!-- Outer circle dots -->
+    <circle cx="200" cy="70" r="3"/>
+    <circle cx="260" cy="100" r="3"/>
+    <circle cx="260" cy="200" r="3"/>
+    <circle cx="200" cy="230" r="3"/>
+    <circle cx="140" cy="200" r="3"/>
+    <circle cx="140" cy="100" r="3"/>
+  </g>
+  
+  <!-- Text: AGRIGENIUS -->
+  <text x="200" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#FFD700">AGRIGENIUS</text>
+  
+  <!-- Text: CHANGING THE FUTURE -->
+  <text x="200" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#FF69B4">CHANGING THE FUTURE</text>
+</svg>

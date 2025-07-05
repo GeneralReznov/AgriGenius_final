@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="350" height="250" xmlns="http://www.w3.org/2000/svg">
+  <!-- TSP (Triple Super Phosphate) Ca(H2PO4)2 -->
+  
+  <!-- Title -->
+  <text x="175" y="30" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Triple Super Phosphate (TSP)</text>
+  <text x="175" y="50" font-family="Arial" font-size="14" text-anchor="middle">Ca(H₂PO₄)₂</text>
+  
+  <!-- Central Calcium -->
+  <circle cx="175" cy="110" r="25" fill="#a6a6a6" stroke="#000" stroke-width="1" />
+  <text x="175" y="115" font-family="Arial" font-size="18" text-anchor="middle" fill="white" font-weight="bold">Ca</text>
+  
+  <!-- Left Phosphate Group -->
+  <line x1="150" y1="110" x2="100" y2="110" stroke="#333" stroke-width="2" />
+  
+  <circle cx="85" cy="110" r="22" fill="#ff9900" stroke="#000" stroke-width="1" />
+  <text x="85" y="115" font-family="Arial" font-size="18" text-anchor="middle" fill="white" font-weight="bold">P</text>
+  
+  <!-- Oxygen attached to P (double bond) -->
+  <line x1="85" y1="88" x2="85" y2="70" stroke="#f00" stroke-width="4" />
+  <circle cx="85" cy="60" r="15" fill="#f00" stroke="#000" stroke-width="1" />
+  <text x="85" y="65" font-family="Arial" font-size="14" text-anchor="middle" fill="white">O</text>
+  
+  <!-- OH groups attached to P -->
+  <line x1="63" y1="110" x2="45" y2="110" stroke="#f00" stroke-width="2" />
+  <circle cx="35" cy="110" r="15" fill="#f00" stroke="#000" stroke-width="1" />
+  <text x="35" y="115" font-family="Arial" font-size="14" text-anchor="middle" fill="white">O</text>
+  
+  <line x1="25" y1="110" x2="10" y2="110" stroke="#333" stroke-width="2" />
+  <circle cx="0" cy="110" r="10" fill="#fff" stroke="#000" stroke-width="1" />
+  <text x="0" y="115" font-family="Arial" font-size="12" text-anchor="middle">H</text>
+  
+  <line x1="85" y1="132" x2="85" y2="145" stroke="#f00" stroke-width="2" />
+  <circle cx="85" cy="155" r="15" fill="#f00" stroke="#000" stroke-width="1" />
+  <text x="85" y="160" font-family="Arial" font-size="14" text-anchor="middle" fill="white">O</text>
+  
+  <line x1="85" y1="170" x2="85" y2="185" stroke="#333" stroke-width="2" />
+  <circle cx="85" cy="195" r="10" fill="#fff" stroke="#000" stroke-width="1" />
+  <text x="85" y="200" font-family="Arial" font-size="12" text-anchor="middle">H</text>
+  
+  <line x1="107" y1="110" x2="125" y2="130" stroke="#f00" stroke-width="2" />
+  <circle cx="135" cy="140" r="15" fill="#f00" stroke="#000" stroke-width="1" />
+  <text x="135" y="145" font-family="Arial" font-size="14" text-anchor="middle" fill="white">O</text>
+  
+  <!-- Right Phosphate Group (mirror of left) -->
+  <line x1="200" y1="110" x2="250" y2="110" stroke="#333" stroke-width="2" />
+  
+  <circle cx="265" cy="110" r="22" fill="#ff9900" stroke="#000" stroke-width="1" />
+  <text x="265" y="115" font-family="Arial" font-size="18" text-anchor="middle" fill="white" font-weight="bold">P</text>
+  
+  <!-- Oxygen attached to P (double bond) -->
+  <line x1="265" y1="88" x2="265" y2="70" stroke="#f00" stroke-width="4" />
+  <circle cx="265" cy="60" r="15" fill="#f00" stroke="#000" stroke-width="1" />
+  <text x="265" y="65" font-family="Arial" font-size="14" text-anchor="middle" fill="white">O</text>
+  
+  <!-- OH groups attached to P -->
+  <line x1="287" y1="110" x2="305" y2="110" stroke="#f00" stroke-width="2" />
+  <circle cx="315" cy="110" r="15" fill="#f00" stroke="#000" stroke-width="1" />
+  <text x="315" y="115" font-family="Arial" font-size="14" text-anchor="middle" fill="white">O</text>
+  
+  <line x1="325" y1="110" x2="340" y2="110" stroke="#333" stroke-width="2" />
+  <circle cx="350" cy="110" r="10" fill="#fff" stroke="#000" stroke-width="1" />
+  <text x="350" y="115" font-family="Arial" font-size="12" text-anchor="middle">H</text>
+  
+  <line x1="265" y1="132" x2="265" y2="145" stroke="#f00" stroke-width="2" />
+  <circle cx="265" cy="155" r="15" fill="#f00" stroke="#000" stroke-width="1" />
+  <text x="265" y="160" font-family="Arial" font-size="14" text-anchor="middle" fill="white">O</text>
+  
+  <line x1="265" y1="170" x2="265" y2="185" stroke="#333" stroke-width="2" />
+  <circle cx="265" cy="195" r="10" fill="#fff" stroke="#000" stroke-width="1" />
+  <text x="265" y="200" font-family="Arial" font-size="12" text-anchor="middle">H</text>
+  
+  <line x1="243" y1="110" x2="225" y2="130" stroke="#f00" stroke-width="2" />
+  <circle cx="215" cy="140" r="15" fill="#f00" stroke="#000" stroke-width="1" />
+  <text x="215" y="145" font-family="Arial" font-size="14" text-anchor="middle" fill="white">O</text>
+  
+  <!-- Description -->
+  <text x="175" y="230" font-family="Arial" font-size="14" text-anchor="middle">P₂O₅ content: 46-48%</text>
+</svg>

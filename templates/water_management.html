@@ -1,0 +1,751 @@
+{% extends 'base.html' %}
+
+{% block title %}Water Management System - AgriGenius 360°{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .content-wrapper {
+        position: relative;
+        z-index: 2;
+    }
+        
+        .water-card {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #E0E0E0;
+        }
+        
+        .irrigation-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 20px;
+        }
+        
+        .water-input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .water-input-group i {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: #4facfe;
+            z-index: 10;
+        }
+        
+        .water-input-group input,
+        .water-input-group select {
+            padding-left: 45px;
+            border: 2px solid #e3f2fd;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .water-input-group input:focus,
+        .water-input-group select:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+        }
+        
+        .btn-water {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+        
+        .btn-water:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+            color: white;
+        }
+        
+        .plan-result {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            border-left: 5px solid #4facfe;
+            color: #333 !important;
+            }
+            .plan-result * {
+                color: #333 !important;
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .water-tip {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .nav-link.active {
+            background-color: #4facfe !important;
+            color: white !important;
+        }
+        
+        .farm-details-card {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #E0E0E0;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .detail-text small {
+            display: block;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .detail-text strong {
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .water-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #4facfe;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4facfe;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .irrigation-chart {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .water-meter {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            height: 20px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .water-meter::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+            animation: flow 2s linear infinite;
+        }
+        
+        @keyframes flow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .irrigation-techniques {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .technique-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        
+        .technique-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .technique-icon {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .technique-card h6 {
+            color: #4CAF50;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .technique-card p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="water-card p-4 animate__animated animate__fadeInUp">
+                        <div class="text-center mb-4">
+                            <div class="irrigation-icon">
+                                <i class="fas fa-tint"></i>
+                            </div>
+                            <div class="feature-icon water-icon text-center mb-3">
+                                <i class="fas fa-tint fa-4x"></i>
+                            </div>
+                            <h2 class="fw-bold text-primary text-center">💧 Smart Water Management System</h2>
+                            <p class="text-muted">AI-powered irrigation scheduling and water optimization for your crops</p>
+                        </div>
+
+                        <form id="waterManagementForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="water-input-group">
+                                        <i class="fas fa-seedling"></i>
+                                        <select class="form-control" id="crop" name="crop" required>
+                                            <option value="">Select Crop Type</option>
+                                            <option value="wheat">Wheat</option>
+                                            <option value="rice">Rice</option>
+                                            <option value="maize">Maize</option>
+                                            <option value="cotton">Cotton</option>
+                                            <option value="sugarcane">Sugarcane</option>
+                                            <option value="soybean">Soybean</option>
+                                            <option value="potato">Potato</option>
+                                            <option value="tomato">Tomato</option>
+                                            <option value="onion">Onion</option>
+                                            <option value="barley">Barley</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="water-input-group">
+                                        <i class="fas fa-mountain"></i>
+                                        <select class="form-control" id="soilType" name="soil_type" required>
+                                            <option value="">Select Soil Type</option>
+                                            <option value="clayey">Clayey</option>
+                                            <option value="sandy">Sandy</option>
+                                            <option value="loamy">Loamy</option>
+                                            <option value="black">Black Cotton</option>
+                                            <option value="red">Red Soil</option>
+                                            <option value="alluvial">Alluvial</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="water-input-group">
+                                        <i class="fas fa-ruler-combined"></i>
+                                        <input type="number" class="form-control" id="fieldSize" name="field_size" 
+                                               placeholder="Field Size (acres)" step="0.1" min="0.1" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="water-input-group">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <input type="number" class="form-control" id="latitude" name="latitude" 
+                                               placeholder="Latitude (e.g., 28.6139)" step="0.0001" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="water-input-group">
+                                        <i class="fas fa-globe"></i>
+                                        <input type="number" class="form-control" id="longitude" name="longitude" 
+                                               placeholder="Longitude (e.g., 77.2090)" step="0.0001" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-water w-100">
+                                        <i class="fas fa-calculator me-2"></i>Generate Water Plan
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="loading-spinner" id="loadingSpinner">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Analyzing weather data and generating irrigation plan...</p>
+                        </div>
+
+                        <div id="waterPlanResult" class="plan-result" style="display: none;">
+                            <h4 class="text-primary mb-3">
+                                <i class="fas fa-clipboard-list me-2"></i>Your Water Management Plan
+                            </h4>
+                            <div id="planContent"></div>
+                        </div>
+                    </div>
+
+                    <div class="water-card p-4 mt-4 animate__animated animate__fadeInUp animate__delay-1s">
+                        <h4 class="text-center text-primary mb-3">
+                            <i class="fas fa-lightbulb me-2"></i>Water Conservation Tips
+                        </h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="water-tip">
+                                    <h6><i class="fas fa-droplet me-2"></i>Drip Irrigation</h6>
+                                    <p class="mb-0">Can save up to 50% water compared to flood irrigation</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="water-tip">
+                                    <h6><i class="fas fa-leaf me-2"></i>Mulching</h6>
+                                    <p class="mb-0">Reduces water evaporation by 30-40%</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="water-tip">
+                                    <h6><i class="fas fa-clock me-2"></i>Timing</h6>
+                                    <p class="mb-0">Water early morning or evening to minimize evaporation</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="water-tip">
+                                    <h6><i class="fas fa-thermometer-half me-2"></i>Soil Monitoring</h6>
+                                    <p class="mb-0">Use soil moisture sensors for precise watering</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('waterManagementForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('waterPlanResult').style.display = 'none';
+            
+            try {
+                const response = await fetch('/suggest_water_management', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayWaterPlan(result);
+                } else {
+                    showError(result.error || 'Failed to generate water management plan');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Network error. Please check your connection and try again.');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        });
+        
+        function displayWaterPlan(result) {
+            const planContent = document.getElementById('planContent');
+            
+            // Get form data for display
+            const formData = new FormData(document.getElementById('waterManagementForm'));
+            const inputData = Object.fromEntries(formData.entries());
+            
+            // Create structured HTML with visual elements
+            let planHtml = `
+                <div class="farm-details-card mb-4">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="detail-item">
+                                <div class="detail-icon"><i class="fas fa-seedling"></i></div>
+                                <div class="detail-text">
+                                    <small>Crop</small>
+                                    <strong>${inputData.crop || 'Not specified'}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="detail-item">
+                                <div class="detail-icon"><i class="fas fa-mountain"></i></div>
+                                <div class="detail-text">
+                                    <small>Soil</small>
+                                    <strong>${inputData.soil_type || 'Not specified'}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="detail-item">
+                                <div class="detail-icon"><i class="fas fa-expand-arrows-alt"></i></div>
+                                <div class="detail-text">
+                                    <small>Field Size</small>
+                                    <strong>${inputData.field_size || 'Not specified'} acres</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="detail-item">
+                                <div class="detail-icon"><i class="fas fa-cloud-sun"></i></div>
+                                <div class="detail-text">
+                                    <small>Location</small>
+                                    <strong>${inputData.location || 'Not specified'}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add irrigation technique images and visuals
+            planHtml += `
+                <div class="irrigation-techniques mt-4">
+                    <h6><i class="fas fa-tools me-2"></i>Irrigation Techniques Visualization</h6>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="technique-card">
+                                <div class="technique-icon">
+                                    <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="15" cy="30" r="3" fill="#2196F3"/>
+                                        <circle cx="30" cy="30" r="3" fill="#2196F3"/>
+                                        <circle cx="45" cy="30" r="3" fill="#2196F3"/>
+                                        <circle cx="60" cy="30" r="3" fill="#2196F3"/>
+                                        <line x1="5" y1="30" x2="70" y2="30" stroke="#4CAF50" stroke-width="2"/>
+                                        <path d="M15 25 Q15 20 15 15" stroke="#2196F3" stroke-width="1" fill="none"/>
+                                        <path d="M30 25 Q30 20 30 15" stroke="#2196F3" stroke-width="1" fill="none"/>
+                                        <path d="M45 25 Q45 20 45 15" stroke="#2196F3" stroke-width="1" fill="none"/>
+                                        <path d="M60 25 Q60 20 60 15" stroke="#2196F3" stroke-width="1" fill="none"/>
+                                    </svg>
+                                </div>
+                                <h6>Drip Irrigation</h6>
+                                <p>Efficient water delivery directly to plant roots</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="technique-card">
+                                <div class="technique-icon">
+                                    <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="40" cy="15" r="8" fill="#4CAF50"/>
+                                        <path d="M20 25 A 20 20 0 0 0 60 25" stroke="#2196F3" stroke-width="2" fill="none"/>
+                                        <path d="M25 30 Q 25 35 20 40" stroke="#2196F3" stroke-width="1" fill="none"/>
+                                        <path d="M35 32 Q 35 37 30 42" stroke="#2196F3" stroke-width="1" fill="none"/>
+                                        <path d="M45 32 Q 45 37 50 42" stroke="#2196F3" stroke-width="1" fill="none"/>
+                                        <path d="M55 30 Q 55 35 60 40" stroke="#2196F3" stroke-width="1" fill="none"/>
+                                        <rect x="20" y="45" width="40" height="8" fill="#8BC34A" opacity="0.7"/>
+                                    </svg>
+                                </div>
+                                <h6>Sprinkler System</h6>
+                                <p>Uniform water distribution over large areas</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="technique-card">
+                                <div class="technique-icon">
+                                    <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="10" y="40" width="60" height="15" fill="#2196F3" opacity="0.7"/>
+                                        <rect x="15" y="35" width="50" height="5" fill="#4CAF50"/>
+                                        <path d="M15 35 L20 25 L25 35" fill="#8BC34A"/>
+                                        <path d="M30 35 L35 25 L40 35" fill="#8BC34A"/>
+                                        <path d="M45 35 L50 25 L55 35" fill="#8BC34A"/>
+                                        <path d="M60 35 L65 25 L65 35" fill="#8BC34A"/>
+                                        <circle cx="5" cy="45" r="2" fill="#FF9800"/>
+                                        <circle cx="75" cy="45" r="2" fill="#FF9800"/>
+                                    </svg>
+                                </div>
+                                <h6>Flood Irrigation</h6>
+                                <p>Traditional method for large field coverage</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Convert plan text to HTML with proper formatting
+            let planText = result.analysis.replace(/\n/g, '<br>');
+            
+            // Add enhanced styling for headers and lists with icons
+            planText = planText.replace(/##\s*(.*?)(<br>|$)/g, '<h5 class="text-primary mt-4 mb-3"><i class="fas fa-arrow-right me-2"></i>$1</h5>');
+            planText = planText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Format tables if they exist
+            planText = planText.replace(/\|(.*?)\|/g, function(match, content) {
+                return `<div class="table-responsive"><table class="table table-bordered table-striped">${content}</table></div>`;
+            });
+            
+            planHtml += planText;
+            
+            // Add a visual water usage chart at the end
+            const chartId = 'waterChart_' + Date.now();
+            planHtml += `
+                <div class="irrigation-chart mt-4">
+                    <h6><i class="fas fa-chart-bar me-2"></i>Water Usage Analysis</h6>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="chart-container">
+                                <canvas id="${chartId}" style="max-width: 100%; max-height: 200px;"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="water-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">${result.total_water_liters || (result.field_size * 2000)}L</div>
+                                    <div class="stat-label">Total Water/Week</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${Math.round((result.total_water_mm || 25) * 0.7)}%</div>
+                                    <div class="stat-label">Efficiency</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${Math.round((result.field_size || 1) * 15)}%</div>
+                                    <div class="stat-label">Water Saved</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Process the analysis text to improve formatting
+            const analysisText = result.analysis || 'No analysis available';
+            const formattedAnalysis = analysisText.replace(/\n/g, '<br>');
+            
+            planContent.innerHTML = `
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <strong>Crop:</strong> ${inputData.crop || 'Not specified'}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Soil:</strong> ${inputData.soil_type || 'Not specified'}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Field Size:</strong> ${inputData.field_size || 'Not specified'} acres
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Location:</strong> ${inputData.location || 'Not specified'}
+                    </div>
+                </div>
+                <hr>
+                <div class="plan-details">
+                    ${planHtml}
+                </div>
+                <div class="analysis-section mt-4">
+                    <h5><i class="fas fa-chart-bar me-2"></i>Water Management Analysis</h5>
+                    <div class="analysis-content">
+                        ${formattedAnalysis}
+                    </div>
+                </div>
+            `;
+            
+            // Create the chart after DOM is updated
+            setTimeout(() => {
+                createWaterUsageChart(chartId, inputData);
+            }, 100);
+            
+            document.getElementById('waterPlanResult').style.display = 'block';
+            document.getElementById('waterPlanResult').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showError(message) {
+            const planContent = document.getElementById('planContent');
+            planContent.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    ${message}
+                </div>
+            `;
+            document.getElementById('waterPlanResult').style.display = 'block';
+        }
+        
+        function createWaterUsageChart(chartId, result) {
+            const ctx = document.getElementById(chartId);
+            if (!ctx) return;
+            
+            // Generate realistic data based on input parameters
+            const cropType = result.crop || 'general';
+            const fieldSize = result.field_size || 1;
+            const soilType = result.soil_type || 'loamy';
+            
+            // Create unique data based on input parameters
+            const dailyWaterNeeds = [];
+            const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            
+            // Generate different patterns based on crop type
+            const baseWater = fieldSize * 50;
+            const cropMultiplier = cropType.toLowerCase().includes('wheat') ? 1.2 : 
+                                 cropType.toLowerCase().includes('rice') ? 1.8 : 
+                                 cropType.toLowerCase().includes('corn') ? 1.5 : 1.0;
+            
+            for (let i = 0; i < 7; i++) {
+                const variation = Math.sin(i * 0.8) * 0.3 + 1;
+                dailyWaterNeeds.push(Math.round(baseWater * cropMultiplier * variation));
+            }
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Daily Water Requirement (Liters)',
+                        data: dailyWaterNeeds,
+                        backgroundColor: [
+                            'rgba(77, 172, 254, 0.8)',
+                            'rgba(0, 242, 254, 0.8)',
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)',
+                            'rgba(255, 159, 64, 0.8)',
+                            'rgba(255, 99, 132, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(77, 172, 254, 1)',
+                            'rgba(0, 242, 254, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
+                    devicePixelRatio: 1,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Water Usage for ${cropType} (${fieldSize} acres)`,
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        },
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Water (Liters)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Days of Week'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Set default coordinates for New Delhi
+        document.getElementById('latitude').value = '28.6139';
+        document.getElementById('longitude').value = '77.2090';
+    </script>
+</div>
+{% endblock %}

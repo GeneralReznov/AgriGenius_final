@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <!-- NPK Fertilizer Diagram -->
+  
+  <!-- Title -->
+  <text x="200" y="30" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">NPK Fertilizer</text>
+  
+  <!-- Nitrogen (N) -->
+  <circle cx="100" cy="120" r="45" fill="#3366cc" stroke="#000" stroke-width="2" />
+  <text x="100" y="130" font-family="Arial" font-size="35" text-anchor="middle" fill="white" font-weight="bold">N</text>
+  <text x="100" y="180" font-family="Arial" font-size="14" text-anchor="middle">Nitrogen</text>
+  
+  <!-- Phosphorus (P) -->
+  <circle cx="200" cy="120" r="45" fill="#ff9900" stroke="#000" stroke-width="2" />
+  <text x="200" y="130" font-family="Arial" font-size="35" text-anchor="middle" fill="white" font-weight="bold">P</text>
+  <text x="200" y="180" font-family="Arial" font-size="14" text-anchor="middle">Phosphorus</text>
+  
+  <!-- Potassium (K) -->
+  <circle cx="300" cy="120" r="45" fill="#9c27b0" stroke="#000" stroke-width="2" />
+  <text x="300" y="130" font-family="Arial" font-size="35" text-anchor="middle" fill="white" font-weight="bold">K</text>
+  <text x="300" y="180" font-family="Arial" font-size="14" text-anchor="middle">Potassium</text>
+  
+  <!-- Description -->
+  <text x="100" y="220" font-family="Arial" font-size="12" text-anchor="middle">Promotes leaf growth</text>
+  <text x="100" y="235" font-family="Arial" font-size="12" text-anchor="middle">and green vegetation</text>
+  
+  <text x="200" y="220" font-family="Arial" font-size="12" text-anchor="middle">Promotes root</text>
+  <text x="200" y="235" font-family="Arial" font-size="12" text-anchor="middle">and flower development</text>
+  
+  <text x="300" y="220" font-family="Arial" font-size="12" text-anchor="middle">Promotes overall</text>
+  <text x="300" y="235" font-family="Arial" font-size="12" text-anchor="middle">plant health and growth</text>
+  
+  <!-- Common Formula Example -->
+  <text x="200" y="270" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">Common Ratio Example: 15-15-15</text>
+  <text x="200" y="290" font-family="Arial" font-size="12" text-anchor="middle">(15% Nitrogen, 15% Phosphorus, 15% Potassium)</text>
+</svg>

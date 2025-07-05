@@ -1,0 +1,459 @@
+{% extends 'base.html' %}
+
+{% block title %}Weather Forecast - AgriGenius 360°{% endblock %}
+
+{% block content %}
+{% include 'weather_animations.html' %}
+<div class="page-header">
+    <h1><i class="fas fa-cloud-sun-rain"></i> Agricultural Weather Forecast</h1>
+    <p class="lead">Get precise weather predictions for major agricultural regions to help plan your farming activities</p>
+</div>
+
+<div class="row mt-4">
+    <div class="col-lg-4">
+        <div class="card location-card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-map-marker-alt"></i> Select Location</h5>
+                <form id="weather-form">
+                    <div class="mb-3">
+                        <label for="region-type" class="form-label">Agricultural Region</label>
+                        <select class="form-select" id="region-type" required>
+                            <option value="" selected disabled>Select a region</option>
+                            <option value="punjab">Punjab (Wheat Belt)</option>
+                            <option value="kerala">Kerala (Spice & Plantation)</option>
+                            <option value="maharashtra">Maharashtra (Cotton & Grapes)</option>
+                            <option value="assam">Assam (Tea Plantations)</option>
+                            <option value="karnataka">Karnataka (Coffee Region)</option>
+                            <option value="westbengal">West Bengal (Rice Bowl)</option>
+                            <option value="gujarat">Gujarat (Groundnut Region)</option>
+                            <option value="tamilnadu">Tamil Nadu (Rice & Sugarcane)</option>
+                            <option value="rajasthan">Rajasthan (Desert Agriculture)</option>
+                            <option value="uttarpradesh">Uttar Pradesh (Sugarcane Belt)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="forecast-days" class="form-label">Forecast Period</label>
+                        <select class="form-select" id="forecast-days">
+                            <option value="1">1 Day</option>
+                            <option value="2">2 Days</option>
+                            <option value="3" selected>3 Days</option>
+                            <option value="4">4 Days</option>
+                            <option value="5">5 Days</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary weather-search-btn">
+                            <i class="fas fa-search weather-search-icon"></i> Get Weather Forecast
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card farming-tips-card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-lightbulb"></i> Weather & Farming Tips</h5>
+                <div class="weather-tip-container">
+                    <div class="weather-tip active" data-condition="rain">
+                        <div class="tip-icon"><i class="fas fa-cloud-rain"></i></div>
+                        <div class="tip-content">
+                            <h6>During Rainy Weather</h6>
+                            <ul>
+                                <li>Ensure proper drainage in fields</li>
+                                <li>Delay fertilizer application</li>
+                                <li>Watch for pest outbreaks</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="weather-tip" data-condition="sunny">
+                        <div class="tip-icon"><i class="fas fa-sun"></i></div>
+                        <div class="tip-content">
+                            <h6>During Hot/Sunny Weather</h6>
+                            <ul>
+                                <li>Irrigate during cooler hours</li>
+                                <li>Use mulch to retain moisture</li>
+                                <li>Monitor for heat stress signs</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="weather-tip" data-condition="cloudy">
+                        <div class="tip-icon"><i class="fas fa-cloud"></i></div>
+                        <div class="tip-content">
+                            <h6>During Cloudy Weather</h6>
+                            <ul>
+                                <li>Good time for transplanting</li>
+                                <li>Reduce irrigation</li>
+                                <li>Monitor humidity levels</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="weather-tip" data-condition="wind">
+                        <div class="tip-icon"><i class="fas fa-wind"></i></div>
+                        <div class="tip-content">
+                            <h6>During Windy Weather</h6>
+                            <ul>
+                                <li>Avoid spraying chemicals</li>
+                                <li>Provide windbreaks for crops</li>
+                                <li>Check for mechanical damage</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tip-navigation">
+                    <button class="tip-nav-btn prev-tip"><i class="fas fa-chevron-left"></i></button>
+                    <button class="tip-nav-btn next-tip"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <div class="card weather-result-card">
+            <div class="card-body">
+                <div id="loading" class="text-center py-5 d-none">
+                    <div class="weather-loading-animation">
+                        <div class="cloud"></div>
+                        <div class="sun"></div>
+                        <div class="rain">
+                            <span style="--i:11"></span>
+                            <span style="--i:12"></span>
+                            <span style="--i:10"></span>
+                            <span style="--i:14"></span>
+                            <span style="--i:18"></span>
+                            <span style="--i:16"></span>
+                            <span style="--i:19"></span>
+                            <span style="--i:20"></span>
+                        </div>
+                    </div>
+                    <p class="mt-3">Fetching latest weather data...</p>
+                </div>
+                
+                <div id="initial-message" class="text-center py-5">
+                    <div class="initial-icon">
+                        <i class="fas fa-cloud-sun"></i>
+                    </div>
+                    <h4 class="mt-3">Weather Forecast Information</h4>
+                    <p>Select an agricultural region to view detailed weather forecasts and farming recommendations.</p>
+                    <div class="weather-animation">
+                        <div class="animated-sun"></div>
+                        <div class="animated-cloud cloud1"></div>
+                        <div class="animated-cloud cloud2"></div>
+                        <div class="animated-mountain"></div>
+                        <div class="animated-field"></div>
+                    </div>
+                </div>
+                
+                <div id="weather-results" class="d-none">
+                    <div class="weather-header">
+                        <h4 id="location-name">Weather Forecast</h4>
+                        <div class="location-subtitle">
+                            <i class="fas fa-map-marker-alt"></i> <span id="region-name"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="current-weather-display">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="current-weather-main">
+                                    <div class="weather-icon-large">
+                                        <i id="current-icon" class="fas fa-cloud-showers-heavy weather-icon"></i>
+                                    </div>
+                                    <div class="temperature-display">
+                                        <span id="current-temp" class="temperature">32</span>°C
+                                    </div>
+                                    <div class="weather-description" id="current-condition">Isolated Scattered Showers</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="weather-metrics">
+                                    <div class="metric-row">
+                                        <i class="fas fa-wind"></i>
+                                        <span>Wind</span>
+                                        <span id="current-wind" class="metric-value">4 km/h</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <i class="fas fa-tint"></i>
+                                        <span>Humidity</span>
+                                        <span id="current-humidity" class="metric-value">75%</span>
+                                    </div>
+                                    <div class="metric-row">
+                                        <i class="fas fa-umbrella"></i>
+                                        <span>Rain</span>
+                                        <span id="current-precipitation" class="metric-value">4 mm</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="daily-forecast">
+                        <h5><i class="fas fa-calendar-alt"></i> Daily Forecast</h5>
+                        <div class="forecast-days" id="forecast-cards">
+                            <div class="forecast-day-card">
+                                <div class="day-name">Wed</div>
+                                <div class="day-icon"><i class="fas fa-cloud-showers-heavy"></i></div>
+                                <div class="day-temps">29° 27°</div>
+                                <div class="day-condition">Isolated Scattered Showers</div>
+                                <div class="day-rain"><i class="fas fa-tint"></i> 4mm</div>
+                            </div>
+                            <div class="forecast-day-card">
+                                <div class="day-name">Thu</div>
+                                <div class="day-icon"><i class="fas fa-sun"></i></div>
+                                <div class="day-temps">30° 28°</div>
+                                <div class="day-condition">Scattered Showers</div>
+                                <div class="day-rain"><i class="fas fa-tint"></i> 6mm</div>
+                            </div>
+                            <div class="forecast-day-card">
+                                <div class="day-name">Fri</div>
+                                <div class="day-icon"><i class="fas fa-cloud-rain"></i></div>
+                                <div class="day-temps">31° 24°</div>
+                                <div class="day-condition">Scattered Showers</div>
+                                <div class="day-rain"><i class="fas fa-tint"></i> 9mm</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="agriculture-impact mt-4">
+                        <h5><i class="fas fa-seedling"></i> Agricultural Impact</h5>
+                        <div class="impact-content" id="impact-content">
+                            <!-- Impact assessment will be added here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="error-container" class="text-center py-5 d-none">
+                    <div class="error-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h4 class="mt-3">Unable to Fetch Weather Data</h4>
+                    <p id="error-message" class="text-danger">An error occurred while retrieving weather forecast.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="how-it-works" style="margin-bottom: 5rem;">
+    <h3><i class="fas fa-cogs"></i> How It Works</h3>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h4>Weather Data Collection</h4>
+                <p>Our system gathers comprehensive meteorological data from multiple weather stations, satellite imagery, and atmospheric sensors across agricultural regions.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="step">
+                <div class="step-number">2</div>
+                <h4>Agricultural Analysis</h4>
+                <p>Advanced algorithms analyze weather patterns and their impact on different crops, soil conditions, and farming activities to provide targeted insights.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="step">
+                <div class="step-number">3</div>
+                <h4>Farming Recommendations</h4>
+                <p>Based on forecast data and agricultural expertise, the system generates specific recommendations for planting, irrigation, harvesting, and crop protection.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const weatherForm = document.getElementById('weather-form');
+    const loadingDiv = document.getElementById('loading');
+    const weatherResults = document.getElementById('weather-results');
+    const errorContainer = document.getElementById('error-container');
+    const initialMessage = document.getElementById('initial-message');
+    const locationName = document.getElementById('location-name');
+    const regionName = document.getElementById('region-name');
+    const forecastCards = document.getElementById('forecast-cards');
+    const impactContent = document.getElementById('impact-content');
+    const errorMessage = document.getElementById('error-message');
+    
+    // Weather tips navigation
+    setupWeatherTips();
+    
+    // Handle form submission
+    weatherForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Get selected values
+        const regionType = document.getElementById('region-type').value;
+        const forecastDays = document.getElementById('forecast-days').value;
+        
+        // Hide results and show loading
+        initialMessage.classList.add('d-none');
+        weatherResults.classList.add('d-none');
+        errorContainer.classList.add('d-none');
+        loadingDiv.classList.remove('d-none');
+        
+        // Add animated loading effect
+        document.querySelector('.weather-search-btn').classList.add('searching');
+        
+        // Fetch weather data from API
+        fetchWeatherForecast(regionType, forecastDays)
+            .then(data => {
+                // Hide loading
+                loadingDiv.classList.add('d-none');
+                document.querySelector('.weather-search-btn').classList.remove('searching');
+                
+                if (data.success) {
+                    // Display results
+                    displayWeatherResults(data.data, regionType);
+                    weatherResults.classList.remove('d-none');
+                } else {
+                    // Show error
+                    errorMessage.textContent = data.error || 'Unable to retrieve weather information.';
+                    errorContainer.classList.remove('d-none');
+                }
+            })
+            .catch(err => {
+                // Hide loading and show error
+                loadingDiv.classList.add('d-none');
+                document.querySelector('.weather-search-btn').classList.remove('searching');
+                errorMessage.textContent = 'Connection error. Please try again later.';
+                errorContainer.classList.remove('d-none');
+                console.error('Error fetching weather:', err);
+            });
+    });
+    
+    // Fetch weather forecast from API
+    async function fetchWeatherForecast(region, days) {
+        try {
+            const response = await fetch('/get_weather_forecast', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ region, days: parseInt(days) })
+            });
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching weather forecast:', error);
+            throw error;
+        }
+    }
+    
+    // Display weather results
+    function displayWeatherResults(data, region) {
+        // Set location name
+        locationName.textContent = `Weather Forecast - ${data.location}`;
+        regionName.textContent = data.location;
+        
+        // Update current weather
+        document.getElementById('current-temp').textContent = data.current.temperature;
+        document.getElementById('current-condition').textContent = data.current.condition;
+        document.getElementById('current-wind').textContent = data.current.wind_speed + ' km/h';
+        document.getElementById('current-humidity').textContent = data.current.humidity + '%';
+        document.getElementById('current-precipitation').textContent = data.current.precipitation + ' mm';
+        document.getElementById('current-icon').className = data.current.icon;
+        
+        // Clear previous forecast cards
+        forecastCards.innerHTML = '';
+        
+        // Add forecast cards with animation
+        data.forecast.forEach((day, index) => {
+            const card = document.createElement('div');
+            card.className = 'forecast-card';
+            card.style.animationDelay = `${index * 100}ms`;
+            
+            card.innerHTML = `
+                <div class="forecast-day">${day.day}</div>
+                <div class="forecast-icon">
+                    <i class="${day.icon}"></i>
+                </div>
+                <div class="forecast-temp">
+                    <span class="temp-high">${day.temp_high}°</span>
+                    <span class="temp-low">${day.temp_low}°</span>
+                </div>
+                <div class="forecast-condition">${day.condition}</div>
+                <div class="forecast-details">
+                    <div class="detail-item">
+                        <i class="fas fa-tint"></i> ${day.humidity}%
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-umbrella"></i> ${day.precipitation}mm
+                    </div>
+                </div>
+            `;
+            
+            forecastCards.appendChild(card);
+        });
+        
+        // Display agricultural insights if available
+        if (data.agricultural_insights) {
+            const insights = data.agricultural_insights;
+            impactContent.innerHTML = `
+                <div class="impact-summary">
+                    <h6><i class="fas fa-info-circle"></i> Impact Assessment</h6>
+                    <p>${insights.impact}</p>
+                </div>
+                
+                <div class="recommendations">
+                    <h6><i class="fas fa-tasks"></i> Farming Recommendations</h6>
+                    <ul class="recommendation-list">
+                        ${insights.recommendations.map(rec => `<li><i class="fas fa-check"></i> ${rec}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="crop-advice">
+                    <h6><i class="fas fa-seedling"></i> Crop-Specific Advice</h6>
+                    <ul class="advice-list">
+                        ${insights.crop_advice.map(advice => `<li><i class="fas fa-leaf"></i> ${advice}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        } else {
+            impactContent.innerHTML = `
+                <div class="default-impact">
+                    <h6><i class="fas fa-info-circle"></i> General Farming Guidance</h6>
+                    <p>Monitor weather conditions closely and adjust farming activities accordingly. Ensure proper field preparation and crop protection measures.</p>
+                </div>
+            `;
+        }
+    }
+    
+    // Setup weather tips navigation
+    function setupWeatherTips() {
+        const tips = document.querySelectorAll('.weather-tip');
+        const prevBtn = document.querySelector('.prev-tip');
+        const nextBtn = document.querySelector('.next-tip');
+        let currentTip = 0;
+        
+        function showTip(index) {
+            tips.forEach((tip, i) => {
+                tip.classList.toggle('active', i === index);
+            });
+        }
+        
+        prevBtn.addEventListener('click', () => {
+            currentTip = currentTip > 0 ? currentTip - 1 : tips.length - 1;
+            showTip(currentTip);
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            currentTip = currentTip < tips.length - 1 ? currentTip + 1 : 0;
+            showTip(currentTip);
+        });
+        
+        // Auto-rotate tips every 5 seconds
+        setInterval(() => {
+            currentTip = currentTip < tips.length - 1 ? currentTip + 1 : 0;
+            showTip(currentTip);
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}

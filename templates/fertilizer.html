@@ -1,0 +1,610 @@
+{% extends 'base.html' %}
+
+{% block title %}Fertilizer Recommendation - AgriGenius 360°{% endblock %}
+
+{% block content %}
+{% include 'weather_animations.html' %}
+<div class="page-header">
+    <h1><i class="fas fa-flask"></i> Fertilizer Recommendation</h1>
+    <p class="lead">Enter soil and crop details to get personalized fertilizer recommendations</p>
+</div>
+
+<div class="row mt-4">
+    <div class="col-lg-7">
+        <div class="card form-card">
+            <div class="card-body">
+                <form id="fertilizer-form">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="temperature" name="temperature" 
+                                       placeholder="Temperature (°C)" min="0" max="50" step="0.1" required>
+                                <label for="temperature">Temperature (°C)</label>
+                                <div class="form-text">Current temperature in Celsius (0-50)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="humidity" name="humidity" 
+                                       placeholder="Humidity (%)" min="0" max="100" step="0.1" required>
+                                <label for="humidity">Humidity (%)</label>
+                                <div class="form-text">Current relative humidity (0-100)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="moisture" name="moisture" 
+                                       placeholder="Moisture (%)" min="0" max="100" step="0.1" required>
+                                <label for="moisture">Moisture (%)</label>
+                                <div class="form-text">Soil moisture content (0-100)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" id="soil_type" name="soil_type" required>
+                                    <option value="" selected disabled>Select soil type</option>
+                                    <option value="Sandy">Sandy</option>
+                                    <option value="Loamy">Loamy</option>
+                                    <option value="Black">Black</option>
+                                    <option value="Red">Red</option>
+                                    <option value="Clayey">Clayey</option>
+                                </select>
+                                <label for="soil_type">Soil Type</label>
+                                <div class="form-text">Type of soil in the field</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <select class="form-select" id="crop_type" name="crop_type" required>
+                                    <option value="" selected disabled>Select crop type</option>
+                                    <option value="Maize">Maize</option>
+                                    <option value="Sugarcane">Sugarcane</option>
+                                    <option value="Cotton">Cotton</option>
+                                    <option value="Tobacco">Tobacco</option>
+                                    <option value="Paddy">Paddy</option>
+                                    <option value="Barley">Barley</option>
+                                    <option value="Wheat">Wheat</option>
+                                    <option value="Millets">Millets</option>
+                                    <option value="Oil seeds">Oil seeds</option>
+                                    <option value="Pulses">Pulses</option>
+                                    <option value="Ground Nuts">Ground Nuts</option>
+                                </select>
+                                <label for="crop_type">Crop Type</label>
+                                <div class="form-text">Type of crop being grown</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="nitrogen" name="nitrogen" 
+                                       placeholder="Nitrogen (N)" min="0" max="140" required>
+                                <label for="nitrogen">Nitrogen (N)</label>
+                                <div class="form-text">Amount of Nitrogen in soil (0-140)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="potassium" name="potassium" 
+                                       placeholder="Potassium (K)" min="0" max="205" required>
+                                <label for="potassium">Potassium (K)</label>
+                                <div class="form-text">Amount of Potassium in soil (0-205)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="number" class="form-control" id="phosphorous" name="phosphorous" 
+                                       placeholder="Phosphorous (P)" min="0" max="145" required>
+                                <label for="phosphorous">Phosphorous (P)</label>
+                                <div class="form-text">Amount of Phosphorous in soil (0-145)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-flask"></i> Predict Fertilizer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-5">
+        <div class="card result-card">
+            <div class="card-body">
+                <h4 class="card-title"><i class="fas fa-flask"></i> Fertilizer Recommendation</h4>
+                <div id="loading" class="text-center d-none">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Analyzing soil and crop conditions...</p>
+                </div>
+                <div id="result-container" class="text-center d-none">
+                    <div class="result-icon mb-3">
+                        <i class="fas fa-check-circle fa-3x text-success"></i>
+                    </div>
+                    <h3 class="mb-3">Recommended Fertilizer</h3>
+                    <div class="recommended-fertilizer">
+                        <span id="fertilizer-result" class="fs-4 fw-bold text-success"></span>
+                    </div>
+                    <div id="fertilizer-diagram" class="mt-3 mb-3">
+                        <!-- Chemical diagram will appear here -->
+                    </div>
+                    <div id="fertilizer-info" class="card p-3 mt-3 text-start">
+                        <h5 class="text-center mb-3">Chemical Properties</h5>
+                        <div id="fertilizer-properties">
+                            <!-- Fertilizer properties will appear here -->
+                        </div>
+                    </div>
+                    <p class="mt-3 fertilizer-description">This fertilizer is recommended based on your soil composition and crop type.</p>
+                </div>
+                <div id="error-container" class="text-center d-none">
+                    <div class="result-icon mb-3">
+                        <i class="fas fa-exclamation-triangle fa-3x text-danger"></i>
+                    </div>
+                    <h3 class="mb-3">Error</h3>
+                    <p id="error-message" class="text-danger"></p>
+                </div>
+                <div id="initial-message" class="text-center">
+                    <i class="fas fa-flask fa-3x text-muted mb-3"></i>
+                    <p>Enter your soil and crop details to get a personalized fertilizer recommendation.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card info-card mt-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-info-circle"></i> How It Works</h5>
+                <p>Our fertilizer recommendation system uses ensemble models to analyze:</p>
+                <ul>
+                    <li>Soil type and nutrient composition</li>
+                    <li>Crop requirements</li>
+                    <li>Environmental conditions</li>
+                </ul>
+                <p>Based on these factors, we suggest the most effective fertilizer for optimal crop growth.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fertilizerForm = document.getElementById('fertilizer-form');
+    const loadingDiv = document.getElementById('loading');
+    const resultContainer = document.getElementById('result-container');
+    const errorContainer = document.getElementById('error-container');
+    const initialMessage = document.getElementById('initial-message');
+    const fertilizerResult = document.getElementById('fertilizer-result');
+    const errorMessage = document.getElementById('error-message');
+    
+    // Add animation to form fields
+    const formFields = document.querySelectorAll('.form-control, .form-select');
+    formFields.forEach((field, index) => {
+        field.style.opacity = '0';
+        field.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            field.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            field.style.opacity = '1';
+            field.style.transform = 'translateY(0)';
+        }, 100 + (index * 100));
+    });
+    
+    fertilizerForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Hide result containers and show loading
+        resultContainer.classList.add('d-none');
+        errorContainer.classList.add('d-none');
+        initialMessage.classList.add('d-none');
+        loadingDiv.classList.remove('d-none');
+        
+        // Get form data with animated button effect
+        const submitButton = document.querySelector('.btn-primary');
+        submitButton.classList.add('pulse-effect');
+        
+        const formData = {
+            temperature: document.getElementById('temperature').value,
+            humidity: document.getElementById('humidity').value,
+            moisture: document.getElementById('moisture').value,
+            soil_type: document.getElementById('soil_type').value,
+            crop_type: document.getElementById('crop_type').value,
+            nitrogen: document.getElementById('nitrogen').value,
+            potassium: document.getElementById('potassium').value,
+            phosphorous: document.getElementById('phosphorous').value
+        };
+        
+        // Send API request
+        fetch('/predict_fertilizer', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Hide loading
+            loadingDiv.classList.add('d-none');
+            submitButton.classList.remove('pulse-effect');
+            
+            if (data.success) {
+                // Show result with staggered animations
+                resultContainer.classList.remove('d-none');
+                resultContainer.style.opacity = '0';
+                resultContainer.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    resultContainer.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    resultContainer.style.opacity = '1';
+                    resultContainer.style.transform = 'translateY(0)';
+                }, 100);
+                
+                // Display fertilizer with animation
+                fertilizerResult.textContent = data.fertilizer;
+                fertilizerResult.classList.add('result-animation');
+                
+                // Add particle effects for fertilizer
+                createFertilizerParticles();
+                
+                // Display chemical diagram and properties
+                displayFertilizerDiagram(data.fertilizer);
+                
+                setTimeout(() => {
+                    fertilizerResult.classList.remove('result-animation');
+                }, 1000);
+            } else {
+                // Show error
+                errorMessage.textContent = data.error || 'An error occurred during prediction.';
+                errorContainer.classList.remove('d-none');
+            }
+        })
+        .catch(error => {
+            // Hide loading and show error
+            loadingDiv.classList.add('d-none');
+            submitButton.classList.remove('pulse-effect');
+            errorMessage.textContent = error.message || 'An error occurred during prediction.';
+            errorContainer.classList.remove('d-none');
+        });
+    });
+    
+    /**
+     * Display chemical diagram and properties for the recommended fertilizer
+     * @param {string} fertilizerName - The name of the recommended fertilizer
+     */
+    function displayFertilizerDiagram(fertilizerName) {
+        const diagramContainer = document.getElementById('fertilizer-diagram');
+        const propertiesContainer = document.getElementById('fertilizer-properties');
+        
+        // Clear previous content
+        diagramContainer.innerHTML = '';
+        propertiesContainer.innerHTML = '';
+        
+        // Fertilizer information object with diagrams and properties
+        const fertilizerInfo = {
+            'Urea': {
+                diagramPath: '/static/images/fertilizers/urea.svg',
+                properties: {
+                    'Chemical Formula': 'CO(NH₂)₂',
+                    'Nitrogen Content': '46%',
+                    'Phosphorus Content': '0%',
+                    'Potassium Content': '0%',
+                    'Physical State': 'White crystalline solid',
+                    'Water Solubility': 'Highly soluble',
+                    'Application Method': 'Broadcasting or side dressing',
+                    'Best For': 'Leafy vegetables, cereals, grasses'
+                }
+            },
+            'DAP': {
+                diagramPath: '/static/images/fertilizers/dap.svg',
+                properties: {
+                    'Chemical Formula': '(NH₄)₂HPO₄',
+                    'Nitrogen Content': '18%',
+                    'Phosphorus Content': '46% (as P₂O₅)',
+                    'Potassium Content': '0%',
+                    'Physical State': 'Granular solid',
+                    'Water Solubility': 'Highly soluble',
+                    'Application Method': 'Broadcasting or band placement',
+                    'Best For': 'Early growth stages, root development'
+                }
+            },
+            'MOP': {
+                diagramPath: '/static/images/fertilizers/MOP.svg',
+                properties: {
+                    'Chemical Formula': 'KCl',
+                    'Nitrogen Content': '0%',
+                    'Phosphorus Content': '0%',
+                    'Potassium Content': '60-62% (as K₂O)',
+                    'Physical State': 'Crystalline solid',
+                    'Water Solubility': 'Highly soluble',
+                    'Application Method': 'Broadcasting or side dressing',
+                    'Best For': 'Potash-demanding crops, quality enhancement'
+                }
+            },
+            '14-35-14': {
+                diagramPath: '/static/images/fertilizers/npk.svg',
+                properties: {
+                    'NPK Ratio': '14-35-14',
+                    'Nitrogen Content': '14%',
+                    'Phosphorus Content': '35% (as P₂O₅)',
+                    'Potassium Content': '14% (as K₂O)',
+                    'Physical State': 'Granular blend',
+                    'Water Solubility': 'Partially soluble',
+                    'Application Method': 'Broadcasting before planting',
+                    'Best For': 'Balanced nutrition with phosphorus emphasis'
+                }
+            },
+            '28-28': {
+                diagramPath: '/static/images/fertilizers/npk.svg',
+                properties: {
+                    'NPK Ratio': '28-28-0',
+                    'Nitrogen Content': '28%',
+                    'Phosphorus Content': '28% (as P₂O₅)',
+                    'Potassium Content': '0%',
+                    'Physical State': 'Granular blend',
+                    'Water Solubility': 'Partially soluble',
+                    'Application Method': 'Broadcasting or band placement',
+                    'Best For': 'Crops needing balanced N and P, early season'
+                }
+            },
+            '20-20': {
+                diagramPath: '/static/images/fertilizers/npk.svg',
+                properties: {
+                    'NPK Ratio': '20-20-0',
+                    'Nitrogen Content': '20%',
+                    'Phosphorus Content': '20% (as P₂O₅)',
+                    'Potassium Content': '0%',
+                    'Physical State': 'Granular blend',
+                    'Water Solubility': 'Partially soluble',
+                    'Application Method': 'Broadcasting before planting',
+                    'Best For': 'General purpose for N and P requirements'
+                }
+            },
+            '17-17-17': {
+                diagramPath: '/static/images/fertilizers/npk.svg',
+                properties: {
+                    'NPK Ratio': '17-17-17',
+                    'Nitrogen Content': '17%',
+                    'Phosphorus Content': '17% (as P₂O₅)',
+                    'Potassium Content': '17% (as K₂O)',
+                    'Physical State': 'Granular blend',
+                    'Water Solubility': 'Partially soluble',
+                    'Application Method': 'Broadcasting or band placement',
+                    'Best For': 'Balanced nutrition for most crops'
+                }
+            },
+            '10-26-26': {
+                diagramPath: '/static/images/fertilizers/npk.svg',
+                properties: {
+                    'NPK Ratio': '10-26-26',
+                    'Nitrogen Content': '10%',
+                    'Phosphorus Content': '26% (as P₂O₅)',
+                    'Potassium Content': '26% (as K₂O)',
+                    'Physical State': 'Granular blend',
+                    'Water Solubility': 'Partially soluble',
+                    'Application Method': 'Broadcasting before planting',
+                    'Best For': 'Fruiting and flowering stages'
+                }
+            },
+            'TSP': {
+                diagramPath: '/static/images/fertilizers/TSP.svg',
+                properties: {
+                    'Chemical Formula': 'Ca(H₂PO₄)₂',
+                    'Nitrogen Content': '0%',
+                    'Phosphorus Content': '46-48% (as P₂O₅)',
+                    'Potassium Content': '0%',
+                    'Physical State': 'Granular solid',
+                    'Water Solubility': 'Partially soluble',
+                    'Application Method': 'Banding or broadcasting',
+                    'Best For': 'Phosphorus-deficient soils, root development'
+                }
+            }
+        };
+        
+        // Default fertilizer info if specific one not found
+        const defaultInfo = {
+            diagramPath: '/static/images/fertilizers/npk.svg',
+            properties: {
+                'NPK Content': 'Varies',
+                'Physical State': 'Typically granular',
+                'Application Method': 'As recommended',
+                'Best For': 'Specific crop requirements'
+            }
+        };
+        
+        // Get info for the recommended fertilizer
+        const info = fertilizerInfo[fertilizerName] || defaultInfo;
+        
+        // Display diagram
+        const img = document.createElement('img');
+        img.src = info.diagramPath;
+        img.alt = `Chemical diagram of ${fertilizerName}`;
+        img.style.maxWidth = '100%';
+        img.style.height = 'auto';
+        img.style.opacity = '0';
+        img.style.transition = 'opacity 1s ease';
+        diagramContainer.appendChild(img);
+        
+        // Fade in the diagram
+        setTimeout(() => {
+            img.style.opacity = '1';
+        }, 100);
+        
+        // Display properties
+        const propertiesList = document.createElement('ul');
+        propertiesList.className = 'list-group';
+        
+        Object.entries(info.properties).forEach(([property, value], index) => {
+            const item = document.createElement('li');
+            item.className = 'list-group-item d-flex justify-content-between align-items-center';
+            item.style.opacity = '0';
+            item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            item.style.transform = 'translateY(20px)';
+            
+            const propertySpan = document.createElement('span');
+            propertySpan.className = 'fw-bold';
+            propertySpan.textContent = property;
+            
+            const valueSpan = document.createElement('span');
+            valueSpan.className = 'badge bg-primary rounded-pill';
+            valueSpan.textContent = value;
+            
+            item.appendChild(propertySpan);
+            item.appendChild(valueSpan);
+            propertiesList.appendChild(item);
+            
+            // Staggered animation
+            setTimeout(() => {
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, 100 + (index * 100));
+        });
+        
+        propertiesContainer.appendChild(propertiesList);
+    }
+    
+    /**
+     * Create fertilizer particle effects
+     */
+    function createFertilizerParticles() {
+        const fertilizerContainer = document.querySelector('.recommended-fertilizer');
+        const containerRect = fertilizerContainer.getBoundingClientRect();
+        
+        // Create particles container if it doesn't exist
+        let particlesContainer = document.querySelector('.fertilizer-particles');
+        if (!particlesContainer) {
+            particlesContainer = document.createElement('div');
+            particlesContainer.className = 'fertilizer-particles';
+            particlesContainer.style.position = 'absolute';
+            particlesContainer.style.top = '0';
+            particlesContainer.style.left = '0';
+            particlesContainer.style.width = '100%';
+            particlesContainer.style.height = '100%';
+            particlesContainer.style.pointerEvents = 'none';
+            particlesContainer.style.overflow = 'hidden';
+            fertilizerContainer.style.position = 'relative';
+            fertilizerContainer.appendChild(particlesContainer);
+        } else {
+            // Clear existing particles
+            particlesContainer.innerHTML = '';
+        }
+        
+        // Get colors based on soil type
+        const soilType = document.getElementById('soil_type').value;
+        let particleColors = ['#8D6E63', '#A1887F', '#795548']; // Default browns
+        
+        switch(soilType) {
+            case 'Sandy':
+                particleColors = ['#E0E0E0', '#F5F5F5', '#EEEEEE'];
+                break;
+            case 'Loamy':
+                particleColors = ['#8D6E63', '#A1887F', '#D7CCC8'];
+                break;
+            case 'Black':
+                particleColors = ['#424242', '#616161', '#757575'];
+                break;
+            case 'Red':
+                particleColors = ['#C62828', '#D32F2F', '#E53935'];
+                break;
+            case 'Clayey':
+                particleColors = ['#FF8A65', '#FFAB91', '#FFCCBC'];
+                break;
+        }
+        
+        // Create particles
+        const particleCount = 30;
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            const size = 3 + Math.random() * 8;
+            const colorIndex = Math.floor(Math.random() * particleColors.length);
+            
+            particle.style.position = 'absolute';
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.backgroundColor = particleColors[colorIndex];
+            particle.style.borderRadius = '50%';
+            
+            // Random starting position
+            const startX = Math.random() * containerRect.width;
+            const startY = Math.random() * containerRect.height / 2;
+            
+            particle.style.left = `${startX}px`;
+            particle.style.top = `${startY}px`;
+            
+            // Animation properties
+            const duration = 1 + Math.random() * 2;
+            const delay = Math.random() * 0.5;
+            
+            particle.style.animation = `fertilizer-particle-fall ${duration}s ease-in ${delay}s`;
+            particle.style.opacity = '0';
+            
+            particlesContainer.appendChild(particle);
+        }
+    }
+});
+</script>
+
+<style>
+/* Additional animations for fertilizer page */
+.pulse-effect {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(121, 85, 72, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(121, 85, 72, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(121, 85, 72, 0);
+    }
+}
+
+.fertilizer-description {
+    animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.recommended-fertilizer {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(45deg, var(--light-color), #d7ccc8);
+    border-left: 6px solid var(--soil-brown);
+    transform-style: preserve-3d;
+    perspective: 800px;
+}
+
+.recommended-fertilizer:hover {
+    transform: translateY(-5px) rotateX(5deg);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fertilizer-particle-fall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100px) rotate(360deg);
+        opacity: 0;
+    }
+}
+</style>
+{% endblock %}
