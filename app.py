@@ -24,7 +24,7 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 # Use server-side storage for chat history instead of sessions
 
 # Configure Google Gemini API
-os.environ['GOOGLE_API_KEY'] = "AIzaSyCZGGDVIyjebUyHX8m0xO6f1pBD6KKjErc"
+os.environ['GOOGLE_API_KEY'] = "AIzaSyAPrO5G4SUuY37_LCOlFW-bFwANfK6RFVI"
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
 if GOOGLE_API_KEY:
     try:
